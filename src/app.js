@@ -1,6 +1,11 @@
 import tmi from "tmi.js"
 import {CHANNEL_NAME, OAUTH_TOKEN, BOT_USERNAME} from "./constants"
 
+const Datastore = require('nedb');
+const database = new Datastore("usersToPlay.db");
+database.loadDatabase();
+db.ensureIndex({ fieldName: 'TwitchUserID', unique: true });
+
 const options = {
 	options: { debug: true },
 	connection: {
@@ -65,6 +70,14 @@ function playCommandHandler(command, messageInfo) {
 		client.say(messageInfo.channel, `@${messageInfo.user.username}, para te juntares à lista para jogar deves usar o comando da seguinte forma: !jogar <nick>`);
 	}
 	else {
-		client.say(messageInfo.channel, `@${messageInfo.user.username}, foste adicionado à lista para jogar! Nick: ${command.args[0]}! (Caso o nick não esteja correto contacta-me por favor)`);
+		addPlayerToDatabase(command.args[0], messageInfo)
+		client.say(messageInfo.channel, `@${messageInfo.user.username}, foste agora adicionado à lista para jogar! Nick: ${command.args[0]}! (Caso o nick não esteja correto contacta-me por favor)`);
 	}
+}
+
+function addPlayerToDatabase(nick, messageInfo) {
+	const data = {TwitchUserID: messageInfo.user.user-id, TwitchUsername: messageInfo.user.username, FortniteNick: nick, Timestamp: Date.now()}
+	database.insert(data, function (err) {
+		client.say(messageInfo.channel, `@${messageInfo.user.username}, já estás na lista para jogar! Nick: ${command.args[0]}! (Caso o nick não esteja correto contacta-me por favor)`);
+	});
 }
