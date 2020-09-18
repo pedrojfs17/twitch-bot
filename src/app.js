@@ -61,12 +61,23 @@ let recognizeCommand = (message) => {
 
 function callCommand(command, messageInfo) {
 	switch (command.command) {
-	  case 'jogar':
-		playCommandHandler(command, messageInfo);
-		break
-	  default:
-		break
+	  	case 'jogar':
+			playCommandHandler(command, messageInfo);
+			break
+		case 'lista':
+			showDatabase();
+			break
+	 	default:
+			break
 	}
+}
+
+function showDatabase() {
+	database.find({}).exec(function(err, docs) {
+		docs.forEach(function(d) {
+			console.log('Found user:', d);
+		});
+	});
 }
 
 function playCommandHandler(command, messageInfo) {
