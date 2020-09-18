@@ -94,7 +94,7 @@ function addPlayerToDatabase(nick, messageInfo) {
 	const data = {TwitchUserID: messageInfo.user['user-id'], TwitchUsername: messageInfo.user.username, FortniteNick: nick, Timestamp: Date.now()}
 	
 	database.find({TwitchUserID: messageInfo.user['user-id']}, function (err, docs) {
-		if (docs === null) {
+		if (docs.length === 0) {
 			database.insert(data);
 			client.say(messageInfo.channel, `@${messageInfo.user.username}, foste agora adicionado à lista para jogar! Nick: ${command.args[0]}! (Caso o nick não esteja correto contacta-me por favor)`);		
 		}
