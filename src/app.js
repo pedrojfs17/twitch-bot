@@ -96,7 +96,7 @@ function addPlayerToDatabase(nick, messageInfo) {
 	database.find({TwitchUserID: messageInfo.user['user-id']}, function (err, docs) {
 		if (docs.length === 0) {
 			database.insert(data);
-			client.say(messageInfo.channel, `@${messageInfo.user.username}, foste agora adicionado à lista para jogar! Nick: ${command.args[0]}! (Caso o nick não esteja correto contacta-me por favor)`);		
+			client.say(messageInfo.channel, `@${messageInfo.user.username}, foste agora adicionado à lista para jogar! Nick: ${nick}! (Caso o nick não esteja correto contacta-me por favor)`);		
 		}
 		else
 			client.say(messageInfo.channel, `@${messageInfo.user.username}, já estás na lista para jogar!`);
