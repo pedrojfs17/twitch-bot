@@ -4,7 +4,7 @@ import {CHANNEL_NAME, OAUTH_TOKEN, BOT_USERNAME} from "./constants"
 const Datastore = require('nedb');
 const database = new Datastore("usersToPlay.db");
 database.loadDatabase();
-db.ensureIndex({ fieldName: 'TwitchUserID', unique: true });
+database.ensureIndex({ fieldName: 'TwitchUserID', unique: true });
 
 const options = {
 	options: { debug: true },
