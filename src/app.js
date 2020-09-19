@@ -1,15 +1,101 @@
 import tmi from "tmi.js"
-import {CHANNEL_NAME, OAUTH_TOKEN, BOT_USERNAME} from "./constants"
+import {CHANNEL_NAME, OAUTH_TOKEN, BOT_USERNAME, SHEET} from "./constants"
 
-const Datastore = require('nedb');
-const database = new Datastore("usersToPlay.db");
-database.loadDatabase();
-database.remove({ }, { multi: true }, function (err, numRemoved) {
-	database.loadDatabase(function (err) {
-	  // done
-	});
-  });
-database.ensureIndex({ fieldName: 'TwitchUserID', unique: true });
+const {google} = require('googleapis');
+
+const sheetsClient = new google.auth.JWT(
+	process.env.CLIENT_EMAIL,
+	null,
+	process.env.PRIVATE_KEY,
+	['https://www.googleapis.com/auth/spreadsheets']
+);
+
+var fullList;
+
+sheetsClient.authorize(function (err, tokens) {
+	if (err) {
+		console.log(err);
+		return;
+	}
+
+	console.log("Connected!");
+	readDatabase(sheetsClient);
+});
+
+async function readDatabase(cl) {
+	const gsapi = google.sheets({version:'v4', auth: cl});
+	const opt = {
+		spreadsheetId: SHEET,
+		range: 'Lista!A2:D100'
+	};
+
+	let data = await gsapi.spreadsheets.values.get(opt);
+	fullList = data.data.values;
+}
+
+async function updateDatabase(cl) {
+	const gsapi = google.sheets({version:'v4', auth: cl});
+	const updateOpt = {
+		spreadsheetId: SHEET,
+		range: 'Lista!A2',
+		valueInputOption: 'USER_ENTERED',
+		resource: { values: fullList }
+	};
+
+	await gsapi.spreadsheets.values.update(updateOpt);
+}
+
+function addPlayerToList(data) {
+	fullList.push(data);
+}
+
+async function addPlayerToDatabase(nick, messageInfo) {
+	const data = [messageInfo.user['user-id'], messageInfo.user.username, nick, Date.now()];
+	addPlayerToList(data);
+	updateDatabase(sheetsClient);
+	client.say(messageInfo.channel, `@${messageInfo.user.username}, foste agora adicionado à lista para jogar com o nick: ${nick}!`);
+}
+
+function isPlayerInDatabase(userID) {
+	for (var i = 0; i < fullList.length; i++) {
+		if (fullList[i][0] === userID)
+			return true;
+	}
+	return false;
+}
+/*
+async function gsrun(cl) {
+	const gsapi = google.sheets({version:'v4', auth: cl});
+
+	// READ FROM SHEET
+
+	const opt = {
+		spreadsheetId: SHEET,
+		range: 'Lista!A2:D10'
+	};
+
+	let data = await gsapi.spreadsheets.values.get(opt);
+	let values = data.data.values;
+
+	let newData = values.map(function(row) {
+		row.push(row[0]*5);
+		return row;
+	})
+
+	values.push(['6','6','6','6','6','30']);
+	let newData = values;
+
+	// WRITE TO SHEET
+
+	const updateOpt = {
+		spreadsheetId: SHEET,
+		range: 'Lista!A2',
+		valueInputOption: 'USER_ENTERED',
+		resource: { values: newData }
+	};
+
+	let res = await gsapi.spreadsheets.values.update(updateOpt);
+}*/
 
 const options = {
 	options: { debug: true },
@@ -64,20 +150,9 @@ function callCommand(command, messageInfo) {
 	  	case 'jogar':
 			playCommandHandler(command, messageInfo);
 			break
-		case 'lista':
-			showDatabase();
-			break
 	 	default:
 			break
 	}
-}
-
-function showDatabase() {
-	database.find({}).exec(function(err, docs) {
-		docs.forEach(function(d) {
-			console.log('Found user:', d);
-		});
-	});
 }
 
 function playCommandHandler(command, messageInfo) {
@@ -85,21 +160,10 @@ function playCommandHandler(command, messageInfo) {
 	if (command.args.length != 1) {
 		client.say(messageInfo.channel, `@${messageInfo.user.username}, para te juntares à lista para jogar deves usar o comando da seguinte forma: !jogar <nick>`);
 	}
-	else {
+	else if (!isPlayerInDatabase(messageInfo.user['user-id'])) {
 		addPlayerToDatabase(command.args[0], messageInfo)
 	}
-}
-
-function addPlayerToDatabase(nick, messageInfo) {
-	const data = {TwitchUserID: messageInfo.user['user-id'], TwitchUsername: messageInfo.user.username, FortniteNick: nick, Timestamp: Date.now()}
-	
-	database.find({TwitchUserID: messageInfo.user['user-id']}, function (err, docs) {
-		if (docs.length === 0) {
-			database.insert(data);
-			client.say(messageInfo.channel, `@${messageInfo.user.username}, foste agora adicionado à lista para jogar! Nick: ${nick}! (Caso o nick não esteja correto contacta-me por favor)`);		
-		}
-		else
-			client.say(messageInfo.channel, `@${messageInfo.user.username}, já estás na lista para jogar!`);
-	})
-	
+	else {
+		client.say(messageInfo.channel, `@${messageInfo.user.username}, já te encontras na lista para jogar!`);
+	}
 }

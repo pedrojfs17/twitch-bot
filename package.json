@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "esm": "^3.2.25",
-    "nedb": "^1.8.0",
+    "googleapis": "39",
     "tmi.js": "^1.5.0"
   }
 }
