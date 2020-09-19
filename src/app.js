@@ -31,6 +31,7 @@ async function readDatabase(cl) {
 
 	let data = await gsapi.spreadsheets.values.get(opt);
 	fullList = data.data.values;
+	console.log(fullList);
 }
 
 async function updateDatabase(cl) {
