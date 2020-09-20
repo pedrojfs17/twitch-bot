@@ -64,8 +64,7 @@ function addPlayerToList(data) {
 }
 
 async function addPlayerToDatabase(nick, messageInfo) {
-	let date = new Date(Date.now());
-	const data = [messageInfo.user['user-id'], messageInfo.user.username, nick, date.toUTCString()];
+	const data = [messageInfo.user['user-id'], messageInfo.user.username, nick, '=TIMESTAMP()'];
 	addPlayerToList(data);
 	//updateDatabase(sheetsClient);
 
