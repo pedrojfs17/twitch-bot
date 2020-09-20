@@ -39,7 +39,7 @@ async function readDatabase(cl) {
 	const gsapi = google.sheets({version:'v4', auth: cl});
 	const opt = {
 		spreadsheetId: SHEET,
-		range: 'Lista!A2:D' + (await nEntries + 1).toString
+		range: 'Lista!A2:D' + (await nEntries + 1).toString()
 	};
 
 	let data = await gsapi.spreadsheets.values.get(opt);
