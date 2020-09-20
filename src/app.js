@@ -10,7 +10,7 @@ const sheetsClient = new google.auth.JWT(
 	['https://www.googleapis.com/auth/spreadsheets']
 );
 
-var fullList;
+var fullList = [];
 
 sheetsClient.authorize(function (err, tokens) {
 	if (err) {
@@ -22,11 +22,24 @@ sheetsClient.authorize(function (err, tokens) {
 	readDatabase(sheetsClient);
 });
 
-async function readDatabase(cl) {
+async function readNumberOfEntries(cl) {
 	const gsapi = google.sheets({version:'v4', auth: cl});
 	const opt = {
 		spreadsheetId: SHEET,
-		range: 'Lista!A2:D100'
+		range: 'Lista!F1'
+	};
+
+	let data = await gsapi.spreadsheets.values.get(opt);
+	console.log("Numero de entradas: " + data.data.values);
+	return data.data.values;
+}
+
+async function readDatabase(cl) {
+	const nEntries = readNumberOfEntries(cl);
+	const gsapi = google.sheets({version:'v4', auth: cl});
+	const opt = {
+		spreadsheetId: SHEET,
+		range: 'Lista!A2:D' + (await nEntries + 1).toString
 	};
 
 	let data = await gsapi.spreadsheets.values.get(opt);
@@ -51,9 +64,21 @@ function addPlayerToList(data) {
 }
 
 async function addPlayerToDatabase(nick, messageInfo) {
-	const data = [messageInfo.user['user-id'], messageInfo.user.username, nick, Date.now()];
-	addPlayerToList(data);
-	updateDatabase(sheetsClient);
+	const data = [messageInfo.user['user-id'], messageInfo.user.username, nick, Date.now().toString()];
+	//addPlayerToList(data);
+	//updateDatabase(sheetsClient);
+
+	const gsapi = google.sheets({version:'v4', auth: cl});
+
+	const updateOpt = {
+		spreadsheetId: SHEET,
+		range: 'Lista!A2',
+		valueInputOption: 'USER_ENTERED',
+		resource: { values: [data] }
+	};
+
+	await gsapi.spreadsheets.values.append(updateOpt);
+
 	client.say(messageInfo.channel, `@${messageInfo.user.username}, foste agora adicionado à lista para jogar com o nick: ${nick}!`);
 }
 
