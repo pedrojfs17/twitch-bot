@@ -63,7 +63,7 @@ function addPlayerToList(data) {
 	fullList.push(data);
 }
 
-async function addPlayerToDatabase(data) {
+async function addPlayerToDatabase(channel, data) {
 	//const data = [messageInfo.user['user-id'], messageInfo.user.username, nick, '=TIMESTAMP()'];
 	addPlayerToList(data);
 
@@ -78,7 +78,7 @@ async function addPlayerToDatabase(data) {
 
 	await gsapi.spreadsheets.values.append(updateOpt);
 
-	client.say(messageInfo.channel, `@${data[1]}, foste agora adicionado à lista para jogar com o nick: ${data[2]}!`);
+	client.say(channel, `@${data[1]}, foste agora adicionado à lista para jogar com o nick: ${data[2]}!`);
 }
 
 function isPlayerInDatabase(userID) {
@@ -210,7 +210,7 @@ function parseBotMessage(channel, message) {
 			console.log('Found Player in List');
 			if (words[3] === 'days' || (Number(words[2]) >= 4 && words[3] === 'hours')) {
 				console.log('Player able to play');
-				addPlayerToDatabase(playersToPlay[i][1]);
+				addPlayerToDatabase(channel, playersToPlay[i][1]);
 			}
 			else
 				client.say(channel, `@${playersToPlay[i][0]}, necessitas de pelo menos 4 horas para estares apto para jogar!`);
