@@ -68,7 +68,7 @@ async function addPlayerToDatabase(nick, messageInfo) {
 	//addPlayerToList(data);
 	//updateDatabase(sheetsClient);
 
-	const gsapi = google.sheets({version:'v4', auth: cl});
+	const gsapi = google.sheets({version:'v4', auth: sheetsClient});
 
 	const updateOpt = {
 		spreadsheetId: SHEET,
