@@ -64,8 +64,9 @@ function addPlayerToList(data) {
 }
 
 async function addPlayerToDatabase(nick, messageInfo) {
-	const data = [messageInfo.user['user-id'], messageInfo.user.username, nick, Date.now().toString()];
-	//addPlayerToList(data);
+	let date = new Date(Date.now());
+	const data = [messageInfo.user['user-id'], messageInfo.user.username, nick, date.toUTCString()];
+	addPlayerToList(data);
 	//updateDatabase(sheetsClient);
 
 	const gsapi = google.sheets({version:'v4', auth: sheetsClient});
