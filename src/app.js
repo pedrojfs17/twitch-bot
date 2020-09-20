@@ -63,10 +63,9 @@ function addPlayerToList(data) {
 	fullList.push(data);
 }
 
-async function addPlayerToDatabase(nick, messageInfo) {
-	const data = [messageInfo.user['user-id'], messageInfo.user.username, nick, '=TIMESTAMP()'];
+async function addPlayerToDatabase(data) {
+	//const data = [messageInfo.user['user-id'], messageInfo.user.username, nick, '=TIMESTAMP()'];
 	addPlayerToList(data);
-	//updateDatabase(sheetsClient);
 
 	const gsapi = google.sheets({version:'v4', auth: sheetsClient});
 
@@ -143,6 +142,9 @@ client.connect().catch(console.error);
 client.on('message', (channel, user, message, self) => {
 	if(self) return;
 
+	if (user['user-id'] === 'StreamElements')
+		parseBotMessage(channel, message);
+
 	if ((message.indexOf('!')) !== -1) {
 		const command = recognizeCommand(message);
 
@@ -186,10 +188,35 @@ function playCommandHandler(command, messageInfo) {
 	if (command.args.length != 1) {
 		client.say(messageInfo.channel, `@${messageInfo.user.username}, para te juntares à lista para jogar deves usar o comando da seguinte forma: !jogar <nick>`);
 	}
-	else if (!isPlayerInDatabase(messageInfo.user['user-id'])) {
-		addPlayerToDatabase(command.args[0], messageInfo)
+	else if (!isPlayerInDatabase(messageInfo.user['user-id'])) {	
+		const data = [messageInfo.user['user-id'], messageInfo.user.username, command.args[0], '=TIMESTAMP()'];
+		addPlayerToCheckList(messageInfo.user['user-id'], data);
+		//addPlayerToDatabase(command.args[0], messageInfo);
 	}
 	else {
 		client.say(messageInfo.channel, `@${messageInfo.user.username}, já te encontras na lista para jogar!`);
 	}
+}
+
+let playersToPlay = [];
+
+function parseBotMessage(channel, message) {
+	const words = message.split(' ');
+	if (words[1] !== 'gastou') return;
+
+	for (var i = 0; i < playersToPlay.length; i++) {
+		if (playersToPlay[i][0] === words[0]) {
+			if (words[3] === 'days' || (Number(words[2]) >= 4 && words[3] === 'hours'))
+				addPlayerToDatabase(playersToPlay[i][1]);
+			else
+				client.say(channel, `@${playersToPlay[i][0]}, necessitas de pelo menos 4 horas para estares apto para jogar!`);
+			playersToPlay.splice(i, 1);
+		}
+	}
+}
+
+function addPlayerToCheckList(twitchUsername, data) {	
+	client.say(messageInfo.channel, `!watchtime @${twitchUsername}`);
+	let info = [twitchUsername, data];
+	playersToPlay.push(info);
 }
