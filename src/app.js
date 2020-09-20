@@ -190,6 +190,7 @@ function playCommandHandler(command, messageInfo) {
 	}
 	else if (!isPlayerInDatabase(messageInfo.user['user-id'])) {	
 		const data = [messageInfo.user['user-id'], messageInfo.user.username, command.args[0], '=TIMESTAMP()'];
+		client.say(messageInfo.channel, `!watchtime @${messageInfo.user.username}`);
 		addPlayerToCheckList(messageInfo.user['user-id'], data);
 		//addPlayerToDatabase(command.args[0], messageInfo);
 	}
@@ -202,21 +203,28 @@ let playersToPlay = [];
 
 function parseBotMessage(channel, message) {
 	const words = message.split(' ');
+	console.log(words);
 	if (words[1] !== 'gastou') return;
 
 	for (var i = 0; i < playersToPlay.length; i++) {
 		if (playersToPlay[i][0] === words[0]) {
-			if (words[3] === 'days' || (Number(words[2]) >= 4 && words[3] === 'hours'))
+			console.log('Found Player in List');
+			if (words[3] === 'days' || (Number(words[2]) >= 4 && words[3] === 'hours')) {
+				console.log('Player able to play');
 				addPlayerToDatabase(playersToPlay[i][1]);
+			}
 			else
 				client.say(channel, `@${playersToPlay[i][0]}, necessitas de pelo menos 4 horas para estares apto para jogar!`);
 			playersToPlay.splice(i, 1);
 		}
 	}
+	console.log('Updated list: ');
+	console.log(playersToPlay);
 }
 
-function addPlayerToCheckList(twitchUsername, data) {	
-	client.say(messageInfo.channel, `!watchtime @${twitchUsername}`);
+function addPlayerToCheckList(twitchUsername, data) {
 	let info = [twitchUsername, data];
 	playersToPlay.push(info);
+	console.log('Added player');
+	console.log(playersToPlay);
 }
