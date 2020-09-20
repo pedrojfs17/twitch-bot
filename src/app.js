@@ -142,7 +142,7 @@ client.connect().catch(console.error);
 client.on('message', (channel, user, message, self) => {
 	if(self) return;
 
-	if (user['user-id'] === 'StreamElements')
+	if (user.username === 'streamelements')
 		parseBotMessage(channel, message);
 
 	if ((message.indexOf('!')) !== -1) {
@@ -191,7 +191,7 @@ function playCommandHandler(command, messageInfo) {
 	else if (!isPlayerInDatabase(messageInfo.user['user-id'])) {	
 		const data = [messageInfo.user['user-id'], messageInfo.user.username, command.args[0], '=TIMESTAMP()'];
 		client.say(messageInfo.channel, `!watchtime @${messageInfo.user.username}`);
-		addPlayerToCheckList(messageInfo.user['user-id'], data);
+		addPlayerToCheckList(messageInfo.user.username, data);
 		//addPlayerToDatabase(command.args[0], messageInfo);
 	}
 	else {
