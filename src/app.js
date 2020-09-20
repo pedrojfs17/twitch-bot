@@ -78,7 +78,7 @@ async function addPlayerToDatabase(data) {
 
 	await gsapi.spreadsheets.values.append(updateOpt);
 
-	client.say(messageInfo.channel, `@${messageInfo.user.username}, foste agora adicionado à lista para jogar com o nick: ${nick}!`);
+	client.say(messageInfo.channel, `@${data[1]}, foste agora adicionado à lista para jogar com o nick: ${data[2]}!`);
 }
 
 function isPlayerInDatabase(userID) {
@@ -203,7 +203,6 @@ let playersToPlay = [];
 
 function parseBotMessage(channel, message) {
 	const words = message.split(' ');
-	console.log(words);
 	if (words[1] !== 'gastou') return;
 
 	for (var i = 0; i < playersToPlay.length; i++) {
