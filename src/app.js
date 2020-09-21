@@ -1,7 +1,7 @@
 import tmi from "tmi.js"
 import {CHANNEL_NAME, OAUTH_TOKEN, BOT_USERNAME} from "./constants"
 
-import {readDatabase, updateDatabase, addPlayerToDatabase} from "./sheets"
+import {readDatabase, updateDatabase} from "./sheets"
 import {recognizeCommand, callCommand, parseBotMessage} from "./commands"
 
 const {google} = require('googleapis');

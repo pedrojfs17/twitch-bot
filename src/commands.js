@@ -1,4 +1,4 @@
-import {isPlayerInList, client} from "./app"
+import {isPlayerInList, addPlayerToDatabase, client} from "./app"
 
 let playersToPlay = [];
 
