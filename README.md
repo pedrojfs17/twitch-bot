@@ -21,9 +21,9 @@ The bot uses Node.js and Yarn as a package manager.
 
 The bot runs along with [StreamElements](https://streamelements.com) so it can check ig the user who entered the command in chat is able to play with the streamer. The bot is configured to check if the viewer as at least 4 hours of watchtime on the channel.
 
-![ComandoMalUsado](https://github.com/pedrojfs17/twitch-bot/tree/master/images/commandUsage.png)
+![ComandoMalUsado](images/commandUsage.png)
 
-![ComandoUsado](https://github.com/pedrojfs17/twitch-bot/tree/master/images/botUsage.png)
+![ComandoUsado](images/botUsage.png)
 
 The bot updates a public Google Sheets' sheet which has the list of the players who are going to play next.
 
