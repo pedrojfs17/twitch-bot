@@ -63,7 +63,7 @@ export function parseBotMessage(channel, message) {
 			if (words[3] === 'days' || (Number(words[2]) >= 4 && words[3] === 'hours')) {
 				console.log('Player able to play');
 				addPlayerToDatabase(playersToPlay[i][1]);
-				client.say(channel, `@${playersToPlay[i][1]}, foste agora adicionado à lista para jogar com o nick: ${playersToPlay[i][2]}!`);
+				client.say(channel, `@${playersToPlay[i][1][1]}, foste agora adicionado à lista para jogar com o nick: ${playersToPlay[i][1][2]}!`);
 			}
 			else
 				client.say(channel, `@${playersToPlay[i][0]}, necessitas de pelo menos 4 horas para estares apto para jogar!`);

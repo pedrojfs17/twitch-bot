@@ -6,7 +6,7 @@ import {recognizeCommand, callCommand, parseBotMessage} from "./commands"
 
 const {google} = require('googleapis');
 
-const sheetsClient = new google.auth.JWT(
+export const sheetsClient = new google.auth.JWT(
 	process.env.CLIENT_EMAIL,
 	null,
 	process.env.PRIVATE_KEY.replace(/\\n/gm, '\n'),

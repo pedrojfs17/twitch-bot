@@ -1,6 +1,6 @@
 const {google} = require('googleapis');
 import {SHEET} from "./constants"
-import {addPlayerToList} from "./app"
+import {addPlayerToList, sheetsClient} from "./app"
 
 async function readNumberOfEntries(cl) {
 	const gsapi = google.sheets({version:'v4', auth: cl});
