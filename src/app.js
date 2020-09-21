@@ -1,6 +1,9 @@
 import tmi from "tmi.js"
 import {CHANNEL_NAME, OAUTH_TOKEN, BOT_USERNAME, SHEET} from "./constants"
 
+import {readDatabase, updateDatabase, addPlayerToDatabase} from "./sheets"
+import {recognizeCommand, callCommand, parseBotMessage} from "./commands"
+
 const {google} = require('googleapis');
 
 const sheetsClient = new google.auth.JWT(
@@ -19,22 +22,22 @@ sheetsClient.authorize(function (err, tokens) {
 	}
 
 	console.log("Connected!");
-	readDatabase(sheetsClient);
+	readDatabase(sheetsClient, fullList);
 });
 
-async function readNumberOfEntries(cl) {
+/* async function readNumberOfEntries(cl) {
 	const gsapi = google.sheets({version:'v4', auth: cl});
 	const opt = {
 		spreadsheetId: SHEET,
-		range: 'Lista!F1'
+		range: 'Lista!E1'
 	};
 
 	let data = await gsapi.spreadsheets.values.get(opt);
 	console.log("Numero de entradas: " + data.data.values);
 	return data.data.values;
-}
+} */
 
-async function readDatabase(cl) {
+/* async function readDatabase(cl) {
 	const nEntries = readNumberOfEntries(cl);
 	const gsapi = google.sheets({version:'v4', auth: cl});
 	const opt = {
@@ -45,9 +48,9 @@ async function readDatabase(cl) {
 	let data = await gsapi.spreadsheets.values.get(opt);
 	fullList = data.data.values;
 	console.log(fullList);
-}
+} */
 
-async function updateDatabase(cl) {
+/* async function updateDatabase(cl) {
 	const gsapi = google.sheets({version:'v4', auth: cl});
 	const updateOpt = {
 		spreadsheetId: SHEET,
@@ -57,13 +60,13 @@ async function updateDatabase(cl) {
 	};
 
 	await gsapi.spreadsheets.values.update(updateOpt);
-}
+} */
 
-function addPlayerToList(data) {
+export function addPlayerToList(data) {
 	fullList.push(data);
 }
 
-async function addPlayerToDatabase(channel, data) {
+/* async function addPlayerToDatabase(data) {
 	//const data = [messageInfo.user['user-id'], messageInfo.user.username, nick, '=TIMESTAMP()'];
 	addPlayerToList(data);
 
@@ -77,50 +80,15 @@ async function addPlayerToDatabase(channel, data) {
 	};
 
 	await gsapi.spreadsheets.values.append(updateOpt);
+} */
 
-	client.say(channel, `@${data[1]}, foste agora adicionado à lista para jogar com o nick: ${data[2]}!`);
-}
-
-function isPlayerInDatabase(userID) {
+export function isPlayerInList(userID) {
 	for (var i = 0; i < fullList.length; i++) {
 		if (fullList[i][0] === userID)
 			return true;
 	}
 	return false;
 }
-/*
-async function gsrun(cl) {
-	const gsapi = google.sheets({version:'v4', auth: cl});
-
-	// READ FROM SHEET
-
-	const opt = {
-		spreadsheetId: SHEET,
-		range: 'Lista!A2:D10'
-	};
-
-	let data = await gsapi.spreadsheets.values.get(opt);
-	let values = data.data.values;
-
-	let newData = values.map(function(row) {
-		row.push(row[0]*5);
-		return row;
-	})
-
-	values.push(['6','6','6','6','6','30']);
-	let newData = values;
-
-	// WRITE TO SHEET
-
-	const updateOpt = {
-		spreadsheetId: SHEET,
-		range: 'Lista!A2',
-		valueInputOption: 'USER_ENTERED',
-		resource: { values: newData }
-	};
-
-	let res = await gsapi.spreadsheets.values.update(updateOpt);
-}*/
 
 const options = {
 	options: { debug: true },
@@ -154,7 +122,7 @@ client.on('message', (channel, user, message, self) => {
 	}
 });
 
-let recognizeCommand = (message) => {
+/* let recognizeCommand = (message) => {
 	const regex = /\!(.*?)$/gm;
 	const fullCommand = regex.exec(message);
   
@@ -171,9 +139,9 @@ let recognizeCommand = (message) => {
 	}
   
 	return false
-}
+} */
 
-function callCommand(command, messageInfo) {
+/* function callCommand(command, messageInfo) {
 	switch (command.command) {
 	  	case 'jogar':
 			playCommandHandler(command, messageInfo);
@@ -181,27 +149,24 @@ function callCommand(command, messageInfo) {
 	 	default:
 			break
 	}
-}
+} */
 
-function playCommandHandler(command, messageInfo) {
+/* function playCommandHandler(command, messageInfo) {
 	// Add user to list with command.args[0] nickname
 	if (command.args.length != 1) {
 		client.say(messageInfo.channel, `@${messageInfo.user.username}, para te juntares à lista para jogar deves usar o comando da seguinte forma: !jogar <nick>`);
 	}
-	else if (!isPlayerInDatabase(messageInfo.user['user-id'])) {	
+	else if (!isPlayerInList(messageInfo.user['user-id'])) {	
 		const data = [messageInfo.user['user-id'], messageInfo.user.username, command.args[0], '=TIMESTAMP()'];
 		client.say(messageInfo.channel, `!watchtime @${messageInfo.user.username}`);
 		addPlayerToCheckList(messageInfo.user.username, data);
-		//addPlayerToDatabase(command.args[0], messageInfo);
 	}
 	else {
 		client.say(messageInfo.channel, `@${messageInfo.user.username}, já te encontras na lista para jogar!`);
 	}
-}
+} */
 
-let playersToPlay = [];
-
-function parseBotMessage(channel, message) {
+/* function parseBotMessage(channel, message) {
 	const words = message.split(' ');
 	if (words[1] !== 'gastou') return;
 
@@ -210,7 +175,8 @@ function parseBotMessage(channel, message) {
 			console.log('Found Player in List');
 			if (words[3] === 'days' || (Number(words[2]) >= 4 && words[3] === 'hours')) {
 				console.log('Player able to play');
-				addPlayerToDatabase(channel, playersToPlay[i][1]);
+				addPlayerToDatabase(playersToPlay[i][1]);
+				client.say(channel, `@${playersToPlay[i][1]}, foste agora adicionado à lista para jogar com o nick: ${playersToPlay[i][2]}!`);
 			}
 			else
 				client.say(channel, `@${playersToPlay[i][0]}, necessitas de pelo menos 4 horas para estares apto para jogar!`);
@@ -219,11 +185,11 @@ function parseBotMessage(channel, message) {
 	}
 	console.log('Updated list: ');
 	console.log(playersToPlay);
-}
+} */
 
-function addPlayerToCheckList(twitchUsername, data) {
+/* function addPlayerToCheckList(twitchUsername, data) {
 	let info = [twitchUsername, data];
 	playersToPlay.push(info);
 	console.log('Added player');
 	console.log(playersToPlay);
-}
+} */
