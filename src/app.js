@@ -103,7 +103,7 @@ const options = {
 	channels: [ CHANNEL_NAME ]
 }
 
-const client = new tmi.Client(options);
+export const client = new tmi.Client(options);
 
 client.connect().catch(console.error);
 
