@@ -52,5 +52,7 @@ export async function addPlayerToDatabase(data) {
 		resource: { values: [data] }
 	};
 
-	await gsapi.spreadsheets.values.append(updateOpt);
+    await gsapi.spreadsheets.values.append(updateOpt);
+    
+    console.log("Added player to database")
 }
