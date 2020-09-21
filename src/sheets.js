@@ -1,5 +1,5 @@
 const {google} = require('googleapis');
-
+import {SHEET} from "./constants"
 import {addPlayerToList} from "./app"
 
 async function readNumberOfEntries(cl) {
