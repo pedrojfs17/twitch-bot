@@ -21,7 +21,7 @@ The bot uses Node.js and Yarn as a package manager.
 
 ![ComandoMalUsado](images/commandUsage.png)
 
-The bot runs along with [StreamElements](https://streamelements.com) so it can check ig the user who entered the command in chat is able to play with the streamer. The bot is configured to check if the viewer as at least 4 hours of watchtime on the channel.
+The bot runs along with [StreamElements](https://streamelements.com) so it can check if the user who entered the command in chat is able to play with the streamer. The bot is configured to check if the viewer as at least 4 hours of watchtime on the channel.
 
 ![ComandoUsado](images/botUsage.png)
 
